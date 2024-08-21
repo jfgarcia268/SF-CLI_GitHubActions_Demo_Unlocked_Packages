@@ -5,8 +5,8 @@
       "default": true
     },
     {
-      "versionName": "ver 0.1",
-      "versionNumber": "0.1.0.NEXT",
+      "versionName": "ver 0.2",
+      "versionNumber": "0.2.0.NEXT",
       "path": "force-app-App1",
       "default": false,
       "package": "App1",
@@ -15,13 +15,13 @@
       "dependencies": [
         {
           "package": "core",
-          "versionNumber": "0.1.0.LATEST"
+          "versionNumber": "0.2.0.LATEST"
         }
       ]
     },
     {
-      "versionName": "ver 0.1",
-      "versionNumber": "0.1.0.NEXT",
+      "versionName": "ver 0.2",
+      "versionNumber": "0.2.0.NEXT",
       "path": "force-app-App2",
       "default": false,
       "package": "App2",
@@ -30,13 +30,13 @@
       "dependencies": [
         {
           "package": "core",
-          "versionNumber": "0.1.0.LATEST"
+          "versionNumber": "0.2.0.LATEST"
         }
       ]
     },
     {
-      "versionName": "ver 0.1",
-      "versionNumber": "0.1.0.NEXT",
+      "versionName": "ver 0.2",
+      "versionNumber": "0.2.0.NEXT",
       "path": "force-app-core",
       "default": false,
       "package": "core",
