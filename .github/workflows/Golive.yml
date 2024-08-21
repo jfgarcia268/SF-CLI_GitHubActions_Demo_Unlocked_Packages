@@ -23,21 +23,21 @@ jobs:
     - name: Get Latest Package Version Info
       id: get_packages_id
       run: |
-        echo "### Get latest PackageVersion Info For core"
+        echo "### Get latest PackageVersion Info For Package core"
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB core
         PACKAGE_ID_CORE=$(cat core_PID.txt)
         echo "PACKAGE_ID_CORE:${PACKAGE_ID_CORE}"
         PACKAGE_IS_RELEASED_CORE=$(cat core_IS_RELEASED.txt)
         echo "PACKAGE_IS_RELEASED_CORE:${PACKAGE_IS_RELEASED_CORE}"
 
-        echo "### Get latest PackageVersion Info For App1"
+        echo "### Get latest PackageVersion Info For Package App1"
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App1
         PACKAGE_ID_App1=$(cat App1_PID.txt)
         echo "PACKAGE_ID_App1:${PACKAGE_ID_App1}"
         PACKAGE_IS_RELEASED_App1=$(cat App1_IS_RELEASED.txt)
         echo "PACKAGE_IS_RELEASED_App1:${PACKAGE_IS_RELEASED_App1}"
 
-        echo "### Get latest PackageVersion Info For App2"
+        echo "### Get latest PackageVersion Info For Package App2"
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App2
         PACKAGE_ID_App2=$(cat App2_PID.txt)
         echo "PACKAGE_ID_App2:${PACKAGE_ID_App2}"
