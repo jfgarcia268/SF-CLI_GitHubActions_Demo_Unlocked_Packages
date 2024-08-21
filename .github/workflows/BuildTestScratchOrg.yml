@@ -62,3 +62,4 @@ jobs:
       DEVHUB_clientid: ${{ secrets.DEVHUB_clientid }}
       RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
       PACKAGES_KEY: ${{ secrets.PACKAGES_KEY }}
+      DEVHUB_USERNAME: ${{ secrets.DEVHUB_USERNAME }}

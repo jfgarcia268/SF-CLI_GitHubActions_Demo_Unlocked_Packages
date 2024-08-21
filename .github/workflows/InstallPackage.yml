@@ -22,6 +22,8 @@ on:
         required: true
       PACKAGES_KEY:
         required: true
+      DEVHUB_USERNAME:
+        required: true
 
 jobs:
   InstallPackages:
