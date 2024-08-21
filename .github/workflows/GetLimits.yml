@@ -7,7 +7,7 @@ jobs:
   getDevHubLimits:
     runs-on: ubuntu-latest
     container:
-      image: jfgarcia268/vlocity_sfdx:core
+      image: jfgarcia268/vlocity_sfdx:vlocity_sfdx:core-sf-cli
     steps:  
       - name: Get DevHub Limits
         run: |
