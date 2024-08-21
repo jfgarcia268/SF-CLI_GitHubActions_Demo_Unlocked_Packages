@@ -1,0 +1,64 @@
+name: Create Test Scratch Org
+
+on:
+  workflow_dispatch:
+
+jobs:
+  GetBranchName:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6.4
+    outputs: 
+      branchName: ${{ steps.branch-name.outputs.current_branch }} 
+  CreateScratchOrg:
+    needs: GetBranchName
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Login DevHub
+      run: |
+          echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+    - name: Create Scratch Org
+      id: create_so
+      run: |
+        sfdx force:org:create --definitionfile config/project-scratch-def.json -a ALIAS --durationdays 29 --target-dev-hub DEVHUB
+        sfdx force:user:password:generate --target-org ALIAS --target-dev-hub DEVHUB
+        if [ -f org.info ]; then
+          rm org.info  
+        fi
+        sfdx org:display --target-org ALIAS --verbose  >> org.info
+        sfdx org:display --target-org ALIAS --verbose --json >> credential.json
+        SO_Password=$( jq -r  '.result.password' credential.json) 
+        SO_User_Name=$( jq -r  '.result.username' credential.json) 
+        SO_URL=$( jq -r  '.result.instanceUrl' credential.json) 
+        echo "SO_User_Name=${SO_User_Name}\n" >> $GITHUB_OUTPUT
+        echo "SO_URL=${SO_URL}\n" >> $GITHUB_OUTPUT
+        echo "GITHUB_OUTPUT:"
+        cat "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Org-Credentials
+        path: ./org.info  
+    outputs: 
+      sousername: ${{ steps.create_so.outputs.SO_User_Name }} 
+      sourl: ${{ steps.create_so.outputs.SO_URL }} 
+  InstallPackages:
+    needs: 
+     - CreateScratchOrg
+     - GetBranchName
+    uses: ./.github/workflows/InstallPackage.yml
+    with:
+      sousername: ${{ needs.CreateScratchOrg.outputs.sousername }}
+      sourl: ${{ needs.CreateScratchOrg.outputs.sourl }}
+      packageName: ${{ needs.GetBranchName.outputs.branchName }}
+    secrets:
+      DEVHUB_clientid: ${{ secrets.DEVHUB_clientid }}
+      RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+      PACKAGES_KEY: ${{ secrets.PACKAGES_KEY }}

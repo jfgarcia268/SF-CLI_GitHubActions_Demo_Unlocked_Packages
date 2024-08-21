@@ -1,0 +1,81 @@
+name: Get Packages List
+
+on:
+  workflow_dispatch:
+    inputs:
+      verbose:
+        type: choice
+        description: 'Verbose'  
+        options: 
+        - true
+        - false
+        required: true
+        default: 0
+      createdLastDays:
+        type: string
+        description: 'Created in the last X day (0 for everything)'  
+        required: true
+        default: 0
+      packageName:
+        type: choice
+        description: 'Package Name (Empty for all)'      
+        options: 
+        - All
+        - Core 
+        - App1 
+        - App2  
+        required: true
+        default: 'All' 
+      orderBy:
+        type: choice
+        description: 'Order By'  
+        options: 
+        - 'CreatedDate'
+        - 'Package2.Name'
+        required: true
+        default: 'CreatedDate desc'
+      
+
+jobs:
+  getDevHubLimits:
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Packages List
+        env:
+          VERBOSE: ${{ inputs.verbose }}
+          CREATED_LAST_DAYS: ${{ inputs.createdLastDays }}  
+          PACKAGE_NAME: ${{ inputs.packageName }}  
+          ORDER_BY: ${{ inputs.orderBy }}  
+        run: |
+          echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+
+          COMMAND="sfdx package:version:list --target-hub-org DEVHUB --order-by ${ORDER_BY} "     
+
+          if ${VERBOSE}; then
+            echo "Adding --verbose" 
+            COMMAND="${COMMAND} --verbose " 
+          fi
+
+          if [ ${CREATED_LAST_DAYS} != "0" ]; then
+            echo "Adding --created-last-days ${CREATED_LAST_DAYS}" 
+            COMMAND="${COMMAND} --created-last-days ${CREATED_LAST_DAYS} " 
+          fi
+
+          if [ ${PACKAGE_NAME} != "All" ]; then
+            echo "Adding --packages ${PACKAGE_NAME}" 
+            COMMAND="${COMMAND} --packages ${PACKAGE_NAME} " 
+          fi
+
+          # Run sfdx package:version:list 
+          echo "COMMAND:${COMMAND}"
+          ${COMMAND} >> PackagesList.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: PackagesList
+          path: ./PackagesList.txt

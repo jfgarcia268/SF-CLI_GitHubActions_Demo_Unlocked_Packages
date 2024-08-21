@@ -1,0 +1,56 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true
+    },
+    {
+      "path": "force-app-App1",
+      "package": "App1",
+      "versionName": "ver 0.1",
+      "versionNumber": "1.1.0.NEXT",
+      "default": false,
+      "versionDescription": "",
+      "definitionFile": "config/project-scratch-def.json",
+      "dependencies": [
+        {
+            "package": "core",
+            "versionNumber": "1.1.1.LATEST"
+        }
+      ]
+    },
+    {
+      "path": "force-app-App2",
+      "package": "App2",
+      "versionName": "ver 0.1",
+      "versionNumber": "1.2.0.NEXT",
+      "default": false,
+      "versionDescription": "",
+      "definitionFile": "config/project-scratch-def.json",
+      "dependencies": [
+        {
+            "package": "core",
+            "versionNumber": "1.2.1.LATEST"
+        }
+      ]
+    },
+    {
+      "path": "force-app-core",
+      "package": "core",
+      "versionName": "ver 0.1",
+      "versionNumber": "1.2.1.NEXT",
+      "default": false,
+      "versionDescription": "",
+      "definitionFile": "config/project-scratch-def.json"
+    }
+  ],
+  "name": "GitHubActions_Demo_Unlocked_Packages",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "57.0",
+  "packageAliases": {
+    "App1": "0HoDm0000008OIjKAM",
+    "App2": "0HoDm0000008OIoKAM",
+    "core": "0HoDm0000008OItKAM"
+  }
+}

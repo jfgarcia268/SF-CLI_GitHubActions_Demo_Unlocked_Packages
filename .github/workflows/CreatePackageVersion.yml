@@ -1,0 +1,100 @@
+name: Create Package Version
+
+on:
+  workflow_call:
+    inputs:
+      runApexTest:
+        type: string
+        description: 'Run Apex Code Coverage'  
+        required: true
+        default: 'true'
+      skipValidation:
+        type: string
+        description: 'Skip Package Validation'     
+        required: true
+        default: 'false' 
+      packageName:
+        type: string
+        description: Package Name
+        required: true
+        default: 'core'
+      waitTime:
+        type: string
+        description: 'Wait time to create Package'     
+        required: true
+        default: 1000   
+    secrets:
+      DEVHUB_clientid:
+        required: true
+      RSA_PRIVATE_KEY:
+        required: true
+      PACKAGES_KEY:
+        required: true
+  workflow_dispatch:
+    inputs:
+      runApexTest:
+        type: choice
+        description: 'Run Apex Code Coverage'  
+        options: 
+        - true
+        - false  
+        required: true
+        default: 'true'
+      skipValidation:
+        type: choice
+        description: 'Skip Package Validation'     
+        options: 
+        - true
+        - false  
+        required: true
+        default: 'false'  
+      packageName:
+        type: choice
+        description: Package Name
+        required: true
+        default: 'core'
+        options: 
+        - App1
+        - App2
+        - core
+      waitTime:
+        type: integer
+        description: 'Wait time to create Package'     
+        required: true
+        default: 1000  
+
+
+jobs:
+  createPackageVersion:
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Create Package Version 
+        env:
+          RUN_APEX_TESTS: ${{ inputs.runApexTest }}
+          SKIP_VALIDATION: ${{ inputs.skipValidation }}  
+          PACKAGE_NAME: ${{ inputs.packageName }}  
+          WAIT: ${{ inputs.waitTime }}  
+        run: |
+          echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+          echo "RUN_APEX_TESTS: ${RUN_APEX_TESTS}"
+          echo "SKIP_VALIDATION: ${SKIP_VALIDATION}"
+          echo "PACKAGE_NAME: ${PACKAGE_NAME}""
+          echo "WAIT: ${WAIT}""
+          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+          COMMAND="sfdx package:version:create -p ${PACKAGE_NAME} -d "force-app-${PACKAGE_NAME}" --installation-key ${{ secrets.PACKAGES_KEY }}  --wait ${WAIT} --target-hub-org DEVHUB --verbose"      
+          if ${RUN_APEX_TESTS}; then
+            echo "Adding Code Coverage" 
+            COMMAND="${COMMAND} --code-coverage " 
+          fi
+          if ${SKIP_VALIDATION}; then
+            echo "Adding Skip Validation" 
+            COMMAND="${COMMAND} --skipvalidation " 
+          fi
+          # Run sfdx force:package:version:create 
+          echo "COMMAND:${COMMAND}"
+          ${COMMAND}

@@ -1,0 +1,66 @@
+name: Install Package
+
+on: 
+  workflow_call:
+    inputs:
+      packageName:
+        type: string
+        description: Package Name
+        required: true
+      sousername:
+        type: string
+        description: Scratch Org User Name
+        required: true
+      sourl:
+        type: string
+        description: Scratch Org URL
+        required: true  
+    secrets:
+      DEVHUB_clientid:
+        required: true
+      RSA_PRIVATE_KEY:
+        required: true
+      PACKAGES_KEY:
+        required: true
+
+jobs:
+  InstallPackages:
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Login DevHub
+      run: |
+        echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+    - name: Core - Install Salesforce Package
+      run: |
+        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sfdx org:list
+        echo "Package Name: ${{ inputs.packageName }}"
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB core
+        PACKAGE_ID=$(cat core_PID.txt)
+        echo "PACKAGE_ID:${PACKAGE_ID}"
+        sfdx package:install --package ${PACKAGE_ID} --target-org SO_ALIAS --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+    - name: App1 - Install Salesforce Package
+      if: ${{ inputs.packageName == 'App1' }} 
+      run: |
+        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sfdx org:list
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App1
+        PACKAGE_ID=$(cat App1_PID.txt)
+        echo "PACKAGE_ID:${PACKAGE_ID}"
+        sfdx package:install --package ${PACKAGE_ID} --target-org SO_ALIAS --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+    - name: App2 - Install Salesforce Package
+      if: ${{ inputs.packageName == 'App2' }} 
+      run: |
+        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sfdx org:list
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App2
+        PACKAGE_ID=$(cat App2_PID.txt)
+        echo "PACKAGE_ID:${PACKAGE_ID}"
+        sfdx package:install --package ${PACKAGE_ID} --target-org SO_ALIAS --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+

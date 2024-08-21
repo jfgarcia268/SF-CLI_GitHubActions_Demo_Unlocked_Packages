@@ -1,0 +1,16 @@
+name: Get DevHub Limits
+
+on:
+  workflow_dispatch:
+
+jobs:
+  getDevHubLimits:
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+      - name: Get DevHub Limits
+        run: |
+          echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+          sfdx force:limits:api:display --target-org DEVHUB

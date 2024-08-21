@@ -1,0 +1,45 @@
+name: Code CI
+
+on:
+  push:
+    branches: [core, App1, App2]  
+
+jobs:
+  GetBranchName:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6.4
+    outputs: 
+      branchName: ${{ steps.branch-name.outputs.current_branch }} 
+  CreateVersion:
+      needs: GetBranchName
+      uses: ./.github/workflows/CreatePackageVersion.yml
+      with:
+        runApexTest: 'true'
+        skipValidation: 'false'
+        packageName: ${{ needs.GetBranchName.outputs.branchName }}
+        waitTime: 1000
+      secrets:
+        DEVHUB_clientid: ${{ secrets.DEVHUB_clientid }}
+        RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+        PACKAGES_KEY: ${{ secrets.PACKAGES_KEY }}
+  CodeScan:
+    needs: GetBranchName
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:latest
+    steps:  
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Scan   
+      run: |
+        export HOME=/root
+        sfdx scanner:run --outfile Result.csv --format csv --target "force-app-${{ needs.getBranchName.outputs.branchName }}"
+        ls -la
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Scan-Result
+        path: ./Result.csv

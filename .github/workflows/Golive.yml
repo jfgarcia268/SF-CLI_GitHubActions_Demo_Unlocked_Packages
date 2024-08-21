@@ -1,0 +1,93 @@
+name: Go Live
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  PromoteAndInstallPackages:
+    if: ${{ github.event.pull_request.merged == true }} 
+    runs-on: ubuntu-latest
+    container:
+      image: jfgarcia268/vlocity_sfdx:core
+    steps:  
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Login DevHub
+      run: |
+        echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
+        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+    - name: Get Latest Package Version Info
+      id: get_packages_id
+      run: |
+        echo "### Get latest PackageVersion Info For core"
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB core
+        PACKAGE_ID_CORE=$(cat core_PID.txt)
+        echo "PACKAGE_ID_CORE:${PACKAGE_ID_CORE}"
+        PACKAGE_IS_RELEASED_CORE=$(cat core_IS_RELEASED.txt)
+        echo "PACKAGE_IS_RELEASED_CORE:${PACKAGE_IS_RELEASED_CORE}"
+
+        echo "### Get latest PackageVersion Info For App1"
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App1
+        PACKAGE_ID_App1=$(cat App1_PID.txt)
+        echo "PACKAGE_ID_App1:${PACKAGE_ID_App1}"
+        PACKAGE_IS_RELEASED_App1=$(cat App1_IS_RELEASED.txt)
+        echo "PACKAGE_IS_RELEASED_App1:${PACKAGE_IS_RELEASED_App1}"
+
+        echo "### Get latest PackageVersion Info For App2"
+        ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App2
+        PACKAGE_ID_App2=$(cat App2_PID.txt)
+        echo "PACKAGE_ID_App2:${PACKAGE_ID_App2}"
+        PACKAGE_IS_RELEASED_App2=$(cat App2_IS_RELEASED.txt)
+        echo "PACKAGE_IS_RELEASED_App2:${PACKAGE_IS_RELEASED_App2}"
+
+        echo "PACKAGE_ID_CORE=${PACKAGE_ID_CORE}\n" >> $GITHUB_OUTPUT
+        echo "PACKAGE_ID_App1=${PACKAGE_ID_App1}\n" >> $GITHUB_OUTPUT
+        echo "PACKAGE_ID_App2=${PACKAGE_ID_App2}\n" >> $GITHUB_OUTPUT
+
+        echo "PACKAGE_IS_RELEASED_CORE=${PACKAGE_IS_RELEASED_CORE}\n" >> $GITHUB_OUTPUT
+        echo "PACKAGE_IS_RELEASED_App1=${PACKAGE_IS_RELEASED_App1}\n" >> $GITHUB_OUTPUT
+        echo "PACKAGE_IS_RELEASED_App2=${PACKAGE_IS_RELEASED_App2}\n" >> $GITHUB_OUTPUT
+        echo GITHUB_OUTPUT:
+        cat $GITHUB_OUTPUT
+    - name: Promote Core
+      if: ${{ steps.get_packages_id.outputs.PACKAGE_IS_RELEASED_CORE == 'false' }} 
+      run: |
+        PACKAGE_ID_CORE=${{ steps.get_packages_id.outputs.PACKAGE_ID_CORE }} 
+        echo "# Promoting Core - PACKAGE_ID_CORE: ${PACKAGE_ID_CORE}"
+        sfdx package:version:promote --noprompt --package ${PACKAGE_ID_CORE} --target-hub-org DEVHUB        
+    - name: Promote App1
+      if: ${{ steps.get_packages_id.outputs.PACKAGE_IS_RELEASED_App1 == 'false' }} 
+      run: |
+        PACKAGE_ID_App1=${{ steps.get_packages_id.outputs.PACKAGE_ID_App1 }} 
+        echo "# Promoting App1 - PACKAGE_ID_App1: ${PACKAGE_ID_App1}"
+        sfdx package:version:promote --noprompt --package ${PACKAGE_ID_App1} --target-hub-org DEVHUB
+    - name: Promote App2
+      if: ${{ steps.get_packages_id.outputs.PACKAGE_IS_RELEASED_App2 == 'false' }} 
+      run: |
+        PACKAGE_ID_App2=${{ steps.get_packages_id.outputs.PACKAGE_ID_App2 }} 
+        echo "# Promoting App2 - PACKAGE_ID_App2: ${PACKAGE_ID_App2}"
+        sfdx package:version:promote --noprompt --package ${PACKAGE_ID_App2} --target-hub-org DEVHUB       
+    - name: Install Core
+      run: |
+        PACKAGE_ID_CORE=${{ steps.get_packages_id.outputs.PACKAGE_ID_CORE }} 
+        echo "# Installing Core - PACKAGE_ID_CORE: ${PACKAGE_ID_CORE}"
+        sfdx package:install --package ${PACKAGE_ID_CORE} --target-org DEVHUB --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+    - name: Install App1
+      run: |
+        PACKAGE_ID_App1=${{ steps.get_packages_id.outputs.PACKAGE_ID_App1 }} 
+        echo "# Installing App1 - PACKAGE_ID_App1: ${PACKAGE_ID_App1}"
+        sfdx package:install --package ${PACKAGE_ID_App1} --target-org DEVHUB --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+    - name: Install App2
+      run: |
+        PACKAGE_ID_App2=${{ steps.get_packages_id.outputs.PACKAGE_ID_App2 }} 
+        echo "# Installing App2 - PACKAGE_ID_App2: ${PACKAGE_ID_App2}"
+        sfdx package:install --package ${PACKAGE_ID_App2} --target-org DEVHUB --wait 1000 --publish-wait 1000 --security-type AdminsOnly --installation-key ${{ secrets.PACKAGES_KEY }}
+
+
+
+
+
