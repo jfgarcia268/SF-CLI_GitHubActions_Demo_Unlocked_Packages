@@ -15,7 +15,7 @@
       "dependencies": [
         {
           "package": "core",
-          "versionNumber": "1.1.1.LATEST"
+          "versionNumber": "0.1.0.LATEST"
         }
       ]
     },
@@ -30,7 +30,7 @@
       "dependencies": [
         {
           "package": "core",
-          "versionNumber": "1.2.1.LATEST"
+          "versionNumber": "0.1.0.LATEST"
         }
       ]
     },
