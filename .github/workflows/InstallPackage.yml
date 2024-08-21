@@ -38,7 +38,7 @@ jobs:
         sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ secrets.DEVHUB_USERNAME }} --instance-url https://login.salesforce.com --alias DEVHUB
     - name: Core - Install Salesforce Package
       run: |
-        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ inputs.sousername }} --instance-url ${{ inputs.sourl }} --setalias SO_ALIAS
         sfdx org:list
         echo "Package Name: ${{ inputs.packageName }}"
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB core
@@ -48,7 +48,7 @@ jobs:
     - name: App1 - Install Salesforce Package
       if: ${{ inputs.packageName == 'App1' }} 
       run: |
-        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ inputs.sousername }} --instance-url ${{ inputs.sourl }} --setalias SO_ALIAS
         sfdx org:list
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App1
         PACKAGE_ID=$(cat App1_PID.txt)
@@ -57,7 +57,7 @@ jobs:
     - name: App2 - Install Salesforce Package
       if: ${{ inputs.packageName == 'App2' }} 
       run: |
-        sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ inputs.sousername }} --instanceurl ${{ inputs.sourl }} --setalias SO_ALIAS
+        sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ inputs.sousername }} --instance-url ${{ inputs.sourl }} --setalias SO_ALIAS
         sfdx org:list
         ./scripts/bash/Get_Latest_Version_Package.sh DEVHUB App2
         PACKAGE_ID=$(cat App2_PID.txt)
