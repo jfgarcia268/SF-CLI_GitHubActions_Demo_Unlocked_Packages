@@ -53,9 +53,9 @@ jobs:
           ORDER_BY: ${{ inputs.orderBy }}  
         run: |
           echo "${{ secrets.RSA_PRIVATE_KEY }}"   > server.key
-          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
+          sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ secrets.DEVHUB_USERNAME }} --instance-url https://login.salesforce.com --alias DEVHUB
 
-          COMMAND="sfdx package:version:list --target-hub-org DEVHUB --order-by ${ORDER_BY} "     
+          COMMAND="sf package version list --target-dev-hub DEVHUB --order-by ${ORDER_BY} "     
 
           if ${VERBOSE}; then
             echo "Adding --verbose" 
