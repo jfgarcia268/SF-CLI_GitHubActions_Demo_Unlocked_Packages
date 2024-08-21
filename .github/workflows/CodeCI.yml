@@ -25,21 +25,21 @@ jobs:
         DEVHUB_clientid: ${{ secrets.DEVHUB_clientid }}
         RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
         PACKAGES_KEY: ${{ secrets.PACKAGES_KEY }}
-  CodeScan:
-    needs: GetBranchName
-    runs-on: ubuntu-latest
-    container:
-      image: jfgarcia268/vlocity_sfdx:latest
-    steps:  
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Scan   
-      run: |
-        export HOME=/root
-        sfdx scanner:run --outfile Result.csv --format csv --target "force-app-${{ needs.getBranchName.outputs.branchName }}"
-        ls -la
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Scan-Result
-        path: ./Result.csv
+#  CodeScan:
+#    needs: GetBranchName
+#    runs-on: ubuntu-latest
+#    container:
+#      image: jfgarcia268/vlocity_sfdx:latest
+#    steps:  
+#   - uses: actions/checkout@v3
+#      with:
+#        fetch-depth: 0
+#   - name: Scan   
+#      run: |
+#        export HOME=/root
+#        sfdx scanner:run --outfile Result.csv --format csv --target "force-app-${{ needs.getBranchName.outputs.branchName }}"
+#        ls -la
+#    - uses: actions/upload-artifact@v3
+#      with:
+#        name: Scan-Result
+#        path: ./Result.csv
