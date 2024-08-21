@@ -30,6 +30,8 @@ on:
         required: true
       PACKAGES_KEY:
         required: true
+      DEVHUB_USERNAME:
+        required: true
   workflow_dispatch:
     inputs:
       runApexTest:
