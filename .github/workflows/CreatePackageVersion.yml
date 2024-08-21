@@ -85,8 +85,8 @@ jobs:
           echo "SKIP_VALIDATION: ${SKIP_VALIDATION}"
           echo "PACKAGE_NAME: ${PACKAGE_NAME}""
           echo "WAIT: ${WAIT}""
-          sfdx auth:jwt:grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username demo.org@communications-b2c.1677243042259 --instanceurl https://login.salesforce.com --setalias DEVHUB
-          COMMAND="sfdx package:version:create -p ${PACKAGE_NAME} -d "force-app-${PACKAGE_NAME}" --installation-key ${{ secrets.PACKAGES_KEY }}  --wait ${WAIT} --target-hub-org DEVHUB --verbose"      
+          sf auth jwt grant --clientid ${{ secrets.DEVHUB_clientid }}  --jwtkeyfile server.key --username ${{ secrets.DEVHUB_USERNAME }} --instanceurl https://login.salesforce.com --setalias DEVHUB
+          COMMAND="sf package version create -p ${PACKAGE_NAME} -d "force-app-${PACKAGE_NAME}" --installation-key ${{ secrets.PACKAGES_KEY }}  --wait ${WAIT} --target-hub-org DEVHUB --verbose"      
           if ${RUN_APEX_TESTS}; then
             echo "Adding Code Coverage" 
             COMMAND="${COMMAND} --code-coverage " 
