@@ -85,7 +85,9 @@ jobs:
           echo "SKIP_VALIDATION: ${SKIP_VALIDATION}"
           echo "PACKAGE_NAME: ${PACKAGE_NAME}""
           echo "WAIT: ${WAIT}""
+          echo "///////// sf auth jwt grant"
           sf auth jwt grant --client-id ${{ secrets.DEVHUB_clientid }}  --jwt-key-file server.key --username ${{ secrets.DEVHUB_USERNAME }} --instance-url https://login.salesforce.com --alias DEVHUB
+          echo "///////// Building sf package version create"
           COMMAND="sf package version create -p ${PACKAGE_NAME} -d "force-app-${PACKAGE_NAME}" --installation-key ${{ secrets.PACKAGES_KEY }}  --wait ${WAIT} --target-hub-org DEVHUB --verbose"      
           if ${RUN_APEX_TESTS}; then
             echo "Adding Code Coverage" 
@@ -97,4 +99,5 @@ jobs:
           fi
           # Run sfdx force:package:version:create 
           echo "COMMAND:${COMMAND}"
+          echo "///////// Running sf package version create"
           ${COMMAND}
