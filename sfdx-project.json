@@ -5,41 +5,41 @@
       "default": true
     },
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
       "path": "force-app-App1",
+      "default": false,
       "package": "App1",
-      "versionName": "ver 0.1",
-      "versionNumber": "1.1.0.NEXT",
-      "default": false,
       "versionDescription": "",
       "definitionFile": "config/project-scratch-def.json",
       "dependencies": [
         {
-            "package": "core",
-            "versionNumber": "1.1.1.LATEST"
+          "package": "core",
+          "versionNumber": "1.1.1.LATEST"
         }
       ]
     },
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
       "path": "force-app-App2",
-      "package": "App2",
-      "versionName": "ver 0.1",
-      "versionNumber": "1.2.0.NEXT",
       "default": false,
+      "package": "App2",
       "versionDescription": "",
       "definitionFile": "config/project-scratch-def.json",
       "dependencies": [
         {
-            "package": "core",
-            "versionNumber": "1.2.1.LATEST"
+          "package": "core",
+          "versionNumber": "1.2.1.LATEST"
         }
       ]
     },
     {
-      "path": "force-app-core",
-      "package": "core",
       "versionName": "ver 0.1",
-      "versionNumber": "1.2.1.NEXT",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app-core",
       "default": false,
+      "package": "core",
       "versionDescription": "",
       "definitionFile": "config/project-scratch-def.json"
     }
@@ -49,8 +49,8 @@
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "57.0",
   "packageAliases": {
-    "App1": "0HoDm0000008OIjKAM",
-    "App2": "0HoDm0000008OIoKAM",
-    "core": "0HoDm0000008OItKAM"
+    "App1": "0Hoao0000002GjpCAE",
+    "App2": "0Hoao0000002GlRCAU",
+    "core": "0Hoao0000002Gn3CAE"
   }
 }
